@@ -10,12 +10,11 @@ ret_addr=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
 sudo bash<<__ENDSCRIPT__
 
 # debian packages
-apt-get update
-apt-get install -y memcached locales-all libjpeg62 libjpeg-dev libpng-dev screen apache2 sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
-apt-get install -y python3 python3-dev python3-memcache python3-httplib2 python3-wand libapache2-mod-wsgi-py3 python3-xapian-haystack
-
-wget https://bootstrap.pypa.io/get-pip.py
-python3 get-pip.py
+apt update
+apt install -y memcached locales-all libjpeg62 libjpeg-dev libpng-dev screen sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
+apt install -y python3 python3-dev python3-memcache python3-httplib2 python3-wand python3-xapian-haystack
+apt install -y python3-pip
+apt install -y nginx 
 
 # python modules
 ln -fs ${BASE_DIR}/modules/yats $sites 2>/dev/null
@@ -26,7 +25,10 @@ ln -fs ${BASE_DIR}/modules/simple_sso $sites 2>/dev/null
 #ln -fs /vagrant_modules/pyxmpp2 $sites 2>/dev/null
 #ln -fs /vagrant_modules/radicale $sites 2>/dev/null
 
-pip3 install -r vagrant/requirements.txt
+pip3 install git+https://github.com/django-haystack/django-haystack.git
+pip3 install gunicorn 
+
+pip3 install -r ${BASE_DIR}/vagrant/requirements.txt
 #/vagrant/install_xapian.sh
 
 # clamav config
@@ -87,16 +89,16 @@ pygmentize -S default -f html -a .codehilite > ${BASE_DIR}/modules/yats/static/p
 python3 manage.py collectstatic  -l --noinput
 
 # apache config
-a2enmod ssl
-mkdir -p /etc/apache2/certs
-cd /etc/apache2/certs
-openssl genrsa -out dev.yats.net.key 2048
-openssl req -new -x509 -key dev.yats.net.key -out dev.yats.net.cert -days 3650 -subj /CN=dev.yats.net
-cp ${BASE_DIR}/vagrant/yats.apache /etc/apache2/sites-available/yats.conf
-a2dissite default
-a2dissite 000-default
-a2ensite yats
-apache2ctl restart
+# a2enmod ssl
+# mkdir -p /etc/apache2/certs
+# cd /etc/apache2/certs
+# openssl genrsa -out dev.yats.net.key 2048
+# openssl req -new -x509 -key dev.yats.net.key -out dev.yats.net.cert -days 3650 -subj /CN=dev.yats.net
+# cp ${BASE_DIR}/vagrant/yats.apache /etc/apache2/sites-available/yats.conf
+# a2dissite default
+# a2dissite 000-default
+# a2ensite yats
+# apache2ctl restart
 
 # testticket via API
 python3 ${BASE_DIR}/test/api_simple_create.py
