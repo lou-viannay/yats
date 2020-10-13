@@ -77,7 +77,7 @@ chmod go+w /var/web/yats/db
 
 # yats index
 mkdir -p /var/web/yats/index
-chown root:vagrant /var/web/yats/index
+chown root:$GROUPNAME /var/web/yats/index
 chmod go+w /var/web/yats/index
 
 cd /var/web/yats/web/
