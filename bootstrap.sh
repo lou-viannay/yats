@@ -11,7 +11,7 @@ sudo bash<<__ENDSCRIPT__
 
 # debian packages
 apt-get update
-apt-get install -y memcached locales-all libjpeg62-turbo libjpeg-dev libpng-dev screen apache2 sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
+apt-get install -y memcached locales-all libjpeg62 libjpeg-dev libpng-dev screen apache2 sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
 apt-get install -y python3 python3-dev python3-memcache python3-httplib2 python3-wand libapache2-mod-wsgi-py3 python3-xapian-haystack
 
 wget https://bootstrap.pypa.io/get-pip.py
