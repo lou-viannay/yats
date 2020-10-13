@@ -5,16 +5,19 @@ BASE_DIR=`realpath .`
 
 VERSION=$(sed 's/\..*//' /etc/debian_version)
 sites=`python3 -c "import site; print(site.getsitepackages()[0])"`
-ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
-ret_addr=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
-sudo bash<<__ENDSCRIPT__
-
+sudo bash<<INSTALL_PART
 # debian packages
 apt update
 apt install -y memcached locales-all libjpeg62 libjpeg-dev libpng-dev screen sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
 apt install -y python3 python3-dev python3-memcache python3-httplib2 python3-wand python3-xapian-haystack
 apt install -y python3-pip
 apt install -y nginx 
+INSTALL_PART
+
+
+sudo bash<<__ENDSCRIPT__
+ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
+ret_addr=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
 
 # python modules
 ln -fs ${BASE_DIR}/modules/yats $sites 2>/dev/null
@@ -116,6 +119,6 @@ ant ci18n
 
 timedatectl set-ntp true
 
-echo "open http://192.168.33.11 with user: admin password: admin"
+# echo "open http://192.168.33.11 with user: admin password: admin"
 
 __ENDSCRIPT__
