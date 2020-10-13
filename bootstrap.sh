@@ -56,13 +56,6 @@ systemctl restart clamav-daemon.socket
 systemctl restart clamav-daemon.service
 freshclam&
 
-# supervisor yats
-cp ${BASE_DIR}/gunicorn/yats.conf /etc/supervisor/conf.d/
-sed -i 's/GUNICORN_BIN/${GUNICORN}/g' /etc/supervisor/conf.d/yats.conf
-mkdir -p /var/web/yats/gunicorn
-mkdir -p /var/web/yats/run
-cp ${BASE_DIR}/gunicorn/gunicorn.conf /var/web/yats/gunicorn
-sed -i 's/BASE_DIR/var\/web\/yats/g' /var/web/yats/gunicorn/gunicorn.conf
 
 # yats web
 mkdir -p /var/web/yats
@@ -122,12 +115,25 @@ python3 manage.py collectstatic  -l --noinput
 # a2ensite yats
 # apache2ctl restart
 
+# supervisor yats
+cp ${BASE_DIR}/gunicorn/yats.conf /etc/supervisor/conf.d/
+sed -i 's/GUNICORN_BIN/${GUNICORN}/g' /etc/supervisor/conf.d/yats.conf
+mkdir -p /var/web/yats/gunicorn
+mkdir -p /var/web/yats/run
+cp ${BASE_DIR}/gunicorn/gunicorn.conf /var/web/yats/gunicorn
+sed -i 's/BASE_DIR/var\/web\/yats/g' /var/web/yats/gunicorn/gunicorn.conf
+systemctl restart supervisor 
+
+# nginx 
+cp ${BASE_DIR}/nginx/yats.conf /etc/nginx/conf.d
+systemctl restart nginx
+
 # testticket via API
-python3 ${BASE_DIR}/test/api_simple_create.py
+# python3 ${BASE_DIR}/test/api_simple_create.py
 
 # rebuid Index
-python3 manage.py clear_index --noinput
-python3 manage.py update_index 
+# python3 manage.py clear_index --noinput
+# python3 manage.py update_index 
 
 # deb upgrade
 apt-get -y upgrade &
