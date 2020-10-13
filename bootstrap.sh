@@ -2,6 +2,7 @@
 USERNAME=`id -un`
 GROUPNAME=`id -gn`
 BASE_DIR=`realpath .`
+IP_ADDRESS=`ifconfig | grep inet | grep -v inet6 | grep -v 127.0.0.1 | awk '{ print $2 }'`
 
 VERSION=$(sed 's/\..*//' /etc/debian_version)
 sites=`python3 -c "import site; print(site.getsitepackages()[0])"`
@@ -11,7 +12,10 @@ apt update
 apt install -y memcached locales-all libjpeg62 libjpeg-dev libpng-dev screen sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
 apt install -y python3 python3-dev python3-memcache python3-httplib2 python3-wand python3-xapian-haystack
 apt install -y python3-pip
-apt install -y nginx 
+apt install -y nginx supervisor
+
+cp ${BASE_DIR}/nginx/supervisor.conf /etc/nginx/conf.d/
+sed -i 's/SERVER_NAME_OR_IP_ADDRESS/${IP_ADDRESS}/g' /etc/nginx/conf.d/supervisor.conf
 INSTALL_PART
 
 ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
@@ -109,14 +113,14 @@ python3 ${BASE_DIR}/test/api_simple_create.py
 
 # rebuid Index
 python3 manage.py clear_index --noinput
-python3 manage.py update_index --noinput
+python3 manage.py update_index 
 
 # deb upgrade
 apt-get -y upgrade &
 
 # running ant and ignore error
-cd ${BASE_DIR}
-ant ci18n
+# cd ${BASE_DIR}
+# ant ci18n
 
 timedatectl set-ntp true
 
