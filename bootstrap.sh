@@ -14,8 +14,11 @@ apt install -y python3 python3-dev python3-memcache python3-httplib2 python3-wan
 apt install -y python3-pip
 apt install -y nginx supervisor
 
+
+# setup supervisor
 cp ${BASE_DIR}/nginx/supervisor.conf /etc/nginx/conf.d/
 sed -i 's/SERVER_NAME_OR_IP_ADDRESS/${IP_ADDRESS}/g' /etc/nginx/conf.d/supervisor.conf
+sed -i 's/chmod=0700/chmod=777/g' /etc/supervisor/supervisord.conf
 INSTALL_PART
 
 ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
