@@ -97,6 +97,7 @@ cd /var/web/yats/web/
 touch /var/web/yats/db/yats2.sqlite
 chown $USERNAME:$GROUPNAME /var/web/yats/db/yats2.sqlite
 chmod go+w /var/web/yats/db/yats2.sqlite
+python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py createsuperuser --username root --email root@localhost --noinput
 python3 manage.py loaddata ${BASE_DIR}/vagrant/init_db.json
