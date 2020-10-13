@@ -14,10 +14,11 @@ apt install -y python3-pip
 apt install -y nginx 
 INSTALL_PART
 
-
-sudo bash<<__ENDSCRIPT__
 ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
 ret_addr=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
+
+sudo bash<<__ENDSCRIPT__
+
 
 # python modules
 ln -fs ${BASE_DIR}/modules/yats $sites 2>/dev/null
@@ -50,18 +51,18 @@ freshclam&
 # yats web
 mkdir -p /var/web/yats
 mkdir -p /var/web/yats/static
-chown root:$GROUPNAME /var/web/yats/static
+chown $USERNAME:$GROUPNAME /var/web/yats/static
 chmod go+w /var/web/yats/static
 
 ln -fs ${BASE_DIR}/sites/web /var/web/yats/web
 
 mkdir -p /var/web/yats/files
-chown root:$GROUPNAME /var/web/yats/files
+chown $USERNAME:$GROUPNAME /var/web/yats/files
 chmod go+w /var/web/yats/files
 
 mkdir -p /var/web/yats/logs
 touch /var/web/yats/logs/django_request.log
-chown root:$GROUPNAME /var/web/yats/logs/django_request.log
+chown $USERNAME:$GROUPNAME /var/web/yats/logs/django_request.log
 chmod go+w /var/web/yats/logs/django_request.log
 
 ln -fs ${BASE_DIR}/sites/caldav /var/web/yats/caldav
@@ -72,18 +73,18 @@ ln -fs ${BASE_DIR}/vagrant/web.ini /usr/local/yats/config/web.ini
 
 # yats db
 mkdir -p /var/web/yats/db
-chown root:$GROUPNAME /var/web/yats/db
+chown $USERNAME:$GROUPNAME /var/web/yats/db
 chmod go+w /var/web/yats/db
 
 # yats index
 mkdir -p /var/web/yats/index
-chown root:$GROUPNAME /var/web/yats/index
+chown $USERNAME:$GROUPNAME /var/web/yats/index
 chmod go+w /var/web/yats/index
 
 cd /var/web/yats/web/
 
 touch /var/web/yats/db/yats2.sqlite
-chown root:$GROUPNAME /var/web/yats/db/yats2.sqlite
+chown $USERNAME:$GROUPNAME /var/web/yats/db/yats2.sqlite
 chmod go+w /var/web/yats/db/yats2.sqlite
 python3 manage.py migrate
 python3 manage.py createsuperuser --username root --email root@localhost --noinput
