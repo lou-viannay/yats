@@ -3,19 +3,14 @@ USERNAME=`id -un`
 GROUPNAME=`id -gn`
 BASE_DIR=`realpath .`
 
-sudo bash <<__ENDSCRIPT__
-echo "BASE_DIR: ${BASE_DIR}"
-echo "GROUPNAME = $GROUPNAME"
-echo `id -un`
-# apt update
-pwd
-
 VERSION=$(sed 's/\..*//' /etc/debian_version)
+sites=`python3 -c "import site; print(site.getsitepackages()[0])"`
+ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
+ret_addr=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
+sudo bash<<__ENDSCRIPT__
 
 # debian packages
 apt-get update
-#apt-get install -y memcached python-memcache python-httplib2 locales-all libjpeg62-turbo libjpeg-dev libpng-dev screen apache2 apache2-mpm-prefork libapache2-mod-wsgi python-dev sqlite3 gettext ant wget ntp clamav clamav-daemon python-pythonmagick libreoffice`
-# apache2-mpm-prefork ??
 apt-get install -y memcached locales-all libjpeg62-turbo libjpeg-dev libpng-dev screen apache2 sqlite3 gettext ant wget ntp clamav clamav-daemon libreoffice
 apt-get install -y python3 python3-dev python3-memcache python3-httplib2 python3-wand libapache2-mod-wsgi-py3 python3-xapian-haystack
 
@@ -23,7 +18,6 @@ wget https://bootstrap.pypa.io/get-pip.py
 python3 get-pip.py
 
 # python modules
-sites=`python3 -c "import site; print(site.getsitepackages()[0])"`
 ln -fs ${BASE_DIR}/modules/yats $sites 2>/dev/null
 ln -fs ${BASE_DIR}/modules/bootstrap_toolkit $sites 2>/dev/null
 ln -fs ${BASE_DIR}/modules/graph $sites 2>/dev/null
@@ -36,12 +30,10 @@ pip3 install -r vagrant/requirements.txt
 #/vagrant/install_xapian.sh
 
 # clamav config
-ret=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
-if [ "" = "$ret" ]; then
+if [ "" = "$ret_sock" ]; then
 echo "TCPSocket 3310" >> /etc/clamav/clamd.conf
 fi
-ret=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
-if [ "" = "$ret" ]; then
+if [ "" = "$ret_addr" ]; then
 echo "TCPAddr 127.0.0.1" >> /etc/clamav/clamd.conf
 fi
 echo "ListenStream=127.0.0.1:3310" >> /etc/systemd/system/clamav-daemon.socket.d/extend.conf
@@ -123,4 +115,5 @@ ant ci18n
 timedatectl set-ntp true
 
 echo "open http://192.168.33.11 with user: admin password: admin"
+
 __ENDSCRIPT__
