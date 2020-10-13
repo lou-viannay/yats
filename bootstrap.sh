@@ -23,6 +23,7 @@ INSTALL_PART
 
 ret_sock=`grep -ir "TCPSocket" /etc/clamav/clamd.conf`
 ret_addr=`grep -ir "TCPAddr" /etc/clamav/clamd.conf`
+GUNICORN=`which gunicorn`
 
 sudo bash<<__ENDSCRIPT__
 
@@ -55,11 +56,21 @@ systemctl restart clamav-daemon.socket
 systemctl restart clamav-daemon.service
 freshclam&
 
+# supervisor yats
+cp ${BASE_DIR}/gunicorn/yats.conf /etc/supervisor/conf.d/
+sed -i 's/GUNICORN_BIN/${GUNICORN}/g' /etc/supervisor/conf.d/yats.conf
+mkdir -p /var/web/yats/gunicorn
+mkdir -p /var/web/yats/run
+cp ${BASE_DIR}/gunicorn/gunicorn.conf /var/web/yats/gunicorn
+sed -i 's/BASE_DIR/var\/web\/yats/g' /var/web/yats/gunicorn/gunicorn.conf
+
 # yats web
 mkdir -p /var/web/yats
 mkdir -p /var/web/yats/static
-chown $USERNAME:$GROUPNAME /var/web/yats/static
+mkdir -p /var/web/yats/run
+chown -R $USERNAME:$GROUPNAME /var/web/yats
 chmod go+w /var/web/yats/static
+
 
 ln -fs ${BASE_DIR}/sites/web /var/web/yats/web
 
